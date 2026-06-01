@@ -1,0 +1,93 @@
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+type FormData = {
+  email: string;
+  phone: string;
+  paymentMethod: "Card" | "UPI";
+  cardNumber?: string;
+  upiId?: string;
+  terms: boolean;
+};
+
+const schema = yup.object({
+  email: yup.string().email().required(),
+  phone: yup.string().matches(/^[0-9]{10}$/).required(),
+
+  paymentMethod: yup
+    .string()
+    .oneOf(["Card", "UPI"])
+    .required(),
+
+  cardNumber: yup.string().when("paymentMethod", {
+    is: "Card",
+    then: (s) => s.required("Card Number Required"),
+  }),
+
+  upiId: yup.string().when("paymentMethod", {
+    is: "UPI",
+    then: (s) => s.required("UPI ID Required"),
+  }),
+
+  terms: yup.boolean().oneOf([true], "Accept Terms"),
+});
+
+export default function App() {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: yupResolver(schema),
+  });
+
+  const method = watch("paymentMethod");
+
+  const onSubmit = (data: FormData) => {
+    console.log(data);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input placeholder="Email" {...register("email")} />
+      <p>{errors.email?.message}</p>
+
+      <input placeholder="Phone" {...register("phone")} />
+      <p>{errors.phone?.message}</p>
+
+      <select {...register("paymentMethod")}>
+        <option value="">Select</option>
+        <option value="Card">Card</option>
+        <option value="UPI">UPI</option>
+      </select>
+
+      {method === "Card" && (
+        <>
+          <input
+            placeholder="Card Number"
+            {...register("cardNumber")}
+          />
+          <p>{errors.cardNumber?.message}</p>
+        </>
+      )}
+
+      {method === "UPI" && (
+        <>
+          <input
+            placeholder="UPI ID"
+            {...register("upiId")}
+          />
+          <p>{errors.upiId?.message}</p>
+        </>
+      )}
+
+      <input type="checkbox" {...register("terms")} />
+      Accept Terms
+      <p>{errors.terms?.message}</p>
+
+      <button type="submit">Submit</button>
+    </form>
+  );
+}

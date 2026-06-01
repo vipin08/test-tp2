@@ -1,0 +1,83 @@
+const cells = document.querySelectorAll(".cell");
+const result = document.getElementById("result") as HTMLHeadingElement;
+const resetBtn = document.getElementById("resetBtn") as HTMLButtonElement;
+
+let currentPlayer = "X";
+let gameOver = false;
+
+const winPatterns: number[][] = [
+    [0,1,2],
+    [3,4,5],
+    [6,7,8],
+    [0,3,6],
+    [1,4,7],
+    [2,5,8],
+    [0,4,8],
+    [2,4,6]
+];
+
+cells.forEach(cell => {
+
+    cell.addEventListener("click", () => {
+
+        const button = cell as HTMLButtonElement;
+
+        if(button.innerText !== "" || gameOver){
+            return;
+        }
+
+        button.innerText = currentPlayer;
+
+        checkWinner();
+
+        if(!gameOver){
+            currentPlayer =
+                currentPlayer === "X" ? "O" : "X";
+
+            result.innerText =
+                `Player ${currentPlayer} Turn`;
+        }
+
+    });
+
+});
+
+function checkWinner(): void {
+
+    for (const pattern of winPatterns) {
+
+        const [i, j, k] = pattern;
+
+        const a = (cells[i!] as HTMLButtonElement).innerText;
+        const b = (cells[j!] as HTMLButtonElement).innerText;
+        const c = (cells[k!] as HTMLButtonElement).innerText;
+
+        if (a && a === b && b === c) {
+            result.innerText = `Player ${a} Wins!`;
+            gameOver = true;
+            return;
+        }
+    }
+
+    const filled = [...cells].every(
+        cell => (cell as HTMLButtonElement).innerText !== ""
+    );
+
+    if (filled && !gameOver) {
+        result.innerText = "Match Draw!";
+        gameOver = true;
+    }
+}
+
+resetBtn.addEventListener("click", () => {
+
+    cells.forEach(cell => {
+        (cell as HTMLButtonElement).innerText = "";
+    });
+
+    currentPlayer = "X";
+    gameOver = false;
+
+    result.innerText = "Player X Turn";
+
+});

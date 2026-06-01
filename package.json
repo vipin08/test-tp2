@@ -1,0 +1,23 @@
+{
+  "name": "tp2",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "npm"
+  ],
+  "homepage": "https://github.com/vipin08/test-tp2#readme",
+  "bugs": {
+    "url": "https://github.com/vipin08/test-tp2/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vipin08/test-tp2.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+  "test": "echo \"No tests\""
+}
+}

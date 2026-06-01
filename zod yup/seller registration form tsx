@@ -1,0 +1,90 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
+const schema = z.object({
+  firstName: z.string().min(2),
+  lastName: z.string().optional(),
+  email: z.string().email(),
+  phone: z.string().regex(/^[0-9]{10}$/),
+  age: z.coerce.number().min(18),
+
+  password: z.string().min(6),
+  confirmPassword: z.string(),
+
+  accountType: z.enum(["Individual", "Business"]),
+
+  shopName: z.string().min(1),
+  gstNumber: z.string().regex(/^[A-Z0-9]{5,15}$/),
+  businessAddress: z.string().min(1),
+
+  address: z.object({
+    street: z.string(),
+    city: z.string(),
+    state: z.string(),
+    pincode: z.string().regex(/^[0-9]{6}$/),
+  }),
+
+  categories: z.array(z.string()).min(1),
+
+  profileImage: z.any().optional(),
+  idProof: z.any(),
+
+  bankDetails: z.object({
+    accountNumber: z.string(),
+    ifscCode: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/),
+    accountHolderName: z.string(),
+  }),
+
+  terms: z.literal(true),
+}).refine((d) => d.password === d.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Password mismatch",
+});
+
+type FormData = z.infer<typeof schema>;
+
+export default function App() {
+  const { register, handleSubmit } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
+
+  return (
+    <form onSubmit={handleSubmit(console.log)}>
+      <input {...register("firstName")} placeholder="First Name" />
+      <input {...register("email")} placeholder="Email" />
+      <input {...register("phone")} placeholder="Phone" />
+      <input {...register("age")} placeholder="Age" />
+
+      <input {...register("password")} placeholder="Password" />
+      <input {...register("confirmPassword")} placeholder="Confirm Password" />
+
+      <select {...register("accountType")}>
+        <option>Individual</option>
+        <option>Business</option>
+      </select>
+
+      <input {...register("shopName")} placeholder="Shop Name" />
+      <input {...register("gstNumber")} placeholder="GST" />
+
+      <input {...register("address.street")} placeholder="Street" />
+      <input {...register("address.city")} placeholder="City" />
+
+      <label>
+        <input type="checkbox" value="Electronics" {...register("categories")} />
+        Electronics
+      </label>
+
+      <input type="file" {...register("idProof")} />
+
+      <input {...register("bankDetails.accountNumber")} placeholder="Account No" />
+
+      <label>
+        <input type="checkbox" {...register("terms")} />
+        Terms
+      </label>
+
+      <button>Submit</button>
+    </form>
+  );
+}

@@ -1,0 +1,11 @@
+const passwordInput = document.querySelector("#password") as HTMLInputElement | null;
+const toggleBtn = document.querySelector("#toggleBtn") as HTMLButtonElement | null;
+
+if (passwordInput && toggleBtn) {
+    toggleBtn.addEventListener("click", function () {
+        const isHidden = passwordInput.type === "password";
+
+        passwordInput.type = isHidden ? "text" : "password";
+        toggleBtn.innerText = isHidden ? "Hide" : "Show";
+    });
+}
